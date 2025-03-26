@@ -1,72 +1,72 @@
-const express = require("express")
-const cors = require("cors")
-const path = require("path")
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
-app.use(express.json())
-app.use(cors())
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.json());
+app.use(cors());
+app.use(express.static(path.join(__dirname, "public")));
 
 // Banker's Algorithm implementation
 app.post("/api/bankers", (req, res) => {
-  const { allocation, maxMatrix, available, processCount, resourceCount } = req.body
+  const { allocation, maxMatrix, available, processCount, resourceCount } = req.body;
 
   // Calculate Need Matrix
-  const needMatrix = []
+  const needMatrix = [];
   for (let i = 0; i < processCount; i++) {
-    needMatrix[i] = []
+    needMatrix[i] = [];
     for (let j = 0; j < resourceCount; j++) {
-      needMatrix[i][j] = maxMatrix[i][j] - allocation[i][j]
+      needMatrix[i][j] = maxMatrix[i][j] - allocation[i][j];
 
       // Validation: Need cannot be negative
       if (needMatrix[i][j] < 0) {
         return res.status(400).json({
           error: "Invalid input: Allocation exceeds maximum for some resources",
-        })
+        });
       }
     }
   }
 
   // Initialize tracking variables
-  const work = [...available]
-  const finish = new Array(processCount).fill(false)
-  const safeSequence = []
-  const steps = []
+  const work = [...available];
+  const finish = new Array(processCount).fill(false);
+  const safeSequence = [];
+  const steps = [];
 
   // Initial step
   steps.push({
     type: "info",
     message: "Starting Banker's Algorithm execution",
-  })
+  });
 
   steps.push({
     type: "info",
     message: `Initial Available Resources: [${work.join(", ")}]`,
-  })
+  });
 
   // Safety Algorithm
-  let count = 0
-  let iteration = 0
-  const MAX_ITERATIONS = processCount * 2 // Prevent infinite loops
+  let count = 0;
+  let iteration = 0;
+  const MAX_ITERATIONS = processCount * 2; // Prevent infinite loops
 
   while (count < processCount && iteration < MAX_ITERATIONS) {
-    iteration++
-    let found = false
+    iteration++;
+    let found = false;
 
     steps.push({
       type: "info",
       message: `Iteration ${iteration}: Looking for a process that can be executed safely`,
-    })
+    });
 
     for (let i = 0; i < processCount; i++) {
       if (!finish[i]) {
-        let canExecute = true
+        let canExecute = true;
 
         // Check if all resource needs can be met
         for (let j = 0; j < resourceCount; j++) {
           if (needMatrix[i][j] > work[j]) {
-            canExecute = false
-            break
+            canExecute = false;
+            break;
           }
         }
 
@@ -75,31 +75,31 @@ app.post("/api/bankers", (req, res) => {
           steps.push({
             type: "success",
             message: `Process P${i} can be executed with available resources [${work.join(", ")}]`,
-          })
+          });
 
           // Update work array (resources released after process completes)
-          const oldWork = [...work]
+          const oldWork = [...work];
           for (let j = 0; j < resourceCount; j++) {
-            work[j] += allocation[i][j]
+            work[j] += allocation[i][j];
           }
 
           steps.push({
             type: "resource",
             message: `P${i} releases resources: [${allocation[i].join(", ")}], New available: [${work.join(", ")}]`,
-          })
+          });
 
           // Mark process as finished and add to safe sequence
-          safeSequence.push(i)
-          finish[i] = true
-          found = true
-          count++
-          break
+          safeSequence.push(i);
+          finish[i] = true;
+          found = true;
+          count++;
+          break;
         } else {
           // Process cannot be executed yet
           steps.push({
             type: "info",
             message: `Process P${i} needs [${needMatrix[i].join(", ")}] but only [${work.join(", ")}] available`,
-          })
+          });
         }
       }
     }
@@ -109,13 +109,13 @@ app.post("/api/bankers", (req, res) => {
       steps.push({
         type: "error",
         message: "No process can be executed with current available resources. Deadlock detected!",
-      })
+      });
 
       return res.json({
         isSafe: false,
         needMatrix,
         steps,
-      })
+      });
     }
   }
 
@@ -124,28 +124,29 @@ app.post("/api/bankers", (req, res) => {
     steps.push({
       type: "success",
       message: `All processes can execute safely in sequence: P${safeSequence.join(" → P")}`,
-    })
+    });
 
     return res.json({
       isSafe: true,
       safeSequence,
       needMatrix,
       steps,
-    })
+    });
   } else {
     steps.push({
       type: "error",
       message: "Algorithm did not complete successfully. Possible deadlock.",
-    })
+    });
 
     return res.json({
       isSafe: false,
       needMatrix,
       steps,
-    })
+    });
   }
-})
+});
 
-// Start server
-module.exports = app;
-
+// Export for Vercel to use as a serverless function
+module.exports = (req, res) => {
+  app(req, res);
+};
