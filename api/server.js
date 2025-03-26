@@ -8,7 +8,7 @@ app.use(cors())
 app.use(express.static(path.join(__dirname, "public")))
 
 // Banker's Algorithm implementation
-app.post("/bankers", (req, res) => {
+app.post("/api/bankers", (req, res) => {
   const { allocation, maxMatrix, available, processCount, resourceCount } = req.body
 
   // Calculate Need Matrix
