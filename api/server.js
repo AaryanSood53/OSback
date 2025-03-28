@@ -147,6 +147,4 @@ app.post("/api/bankers", (req, res) => {
 });
 
 // Export for Vercel to use as a serverless function
-module.exports = (req, res) => {
-  app(req, res);
-};
+module.exports = app;
