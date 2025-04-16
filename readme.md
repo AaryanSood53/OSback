@@ -3,8 +3,7 @@
 This repository contains the backend API for the **Deadlock Simulation** web app, implementing the **Banker's Algorithm** for resource allocation and deadlock detection.
 
 ## 🔗 Live API  
-The backend is deployed and accessible at:  
-[https://backfordeadlock.vercel.app/api/bankers](https://backfordeadlock.vercel.app/api/bankers)  
+The backend is deployed and accessible at: 
 
 ## 📌 Features  
 - Implements **Banker’s Algorithm** for deadlock detection.  
@@ -53,7 +52,7 @@ This endpoint runs the Banker's Algorithm and returns whether the system is in a
 
 ### 1️⃣ Clone the Repository  
 ```sh
-git clone https://github.com/Akhand0ps/BackendForDeadlock.git
+git clone https://github.com/AaryanSood53/OSback.git
 cd BackendForDeadlock
 ```
 
@@ -75,6 +74,6 @@ This project is licensed under the **MIT License**.
 
 ### 🌐 Related Repositories  
 🔗 **Frontend** (Deadlock Simulation Web App):  
-[https://github.com/Akhand0ps/DEADLOCK](https://github.com/Akhand0ps/DEADLOCK)  
-Live Demo: [https://deadlock-mu.vercel.app/index.html](https://deadlock-mu.vercel.app/index.html)  
+[https://github.com/AaryanSood53/OSPROJECT.git](https://github.com/AaryanSood53/OSPROJECT.git)  
+  
 
